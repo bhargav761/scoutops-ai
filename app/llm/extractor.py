@@ -2,6 +2,7 @@ from google import genai
 
 from app.config import GEMINI_API_KEY, LLM_MODEL
 from app.llm.schema import CompanyIntelligence
+from app.observability.cost import build_usage_metrics
 
 
 SYSTEM_PROMPT = """
@@ -22,7 +23,10 @@ Rules:
 """
 
 
-def extract_company_intelligence(context: str) -> CompanyIntelligence:
+def extract_company_intelligence_with_usage(
+    context: str,
+) -> tuple[CompanyIntelligence, dict]:
+
     if not GEMINI_API_KEY:
         raise RuntimeError(
             "GEMINI_API_KEY is not configured. Add it to .env."
@@ -39,4 +43,40 @@ def extract_company_intelligence(context: str) -> CompanyIntelligence:
         },
     )
 
-    return CompanyIntelligence.model_validate_json(response.text)
+    usage = getattr(response, "usage_metadata", None)
+
+    input_tokens = getattr(
+        usage,
+        "prompt_token_count",
+        0,
+    ) if usage else 0
+
+    output_tokens = getattr(
+        usage,
+        "candidates_token_count",
+        0,
+    ) if usage else 0
+
+    metrics = build_usage_metrics(
+        input_tokens=input_tokens,
+        output_tokens=output_tokens,
+    )
+
+    return (
+        CompanyIntelligence.model_validate_json(response.text),
+        {
+            "input_tokens": metrics.input_tokens,
+            "output_tokens": metrics.output_tokens,
+            "total_tokens": metrics.total_tokens,
+            "estimated_cost_usd": metrics.estimated_cost_usd,
+        },
+    )
+
+
+def extract_company_intelligence(
+    context: str,
+) -> CompanyIntelligence:
+
+    intelligence, _ = extract_company_intelligence_with_usage(context)
+
+    return intelligence

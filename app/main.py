@@ -8,7 +8,7 @@ from app.extraction.business_analyzer import (
 from app.extraction.enrichment import enrich_company
 from app.extraction.preprocessor import prepare_context
 from app.llm.business_analyzer import analyze_business
-from app.llm.extractor import extract_company_intelligence
+from app.llm.extractor import extract_company_intelligence_with_usage
 from app.observability.evidence import build_evidence
 from app.observability.metrics import Timer
 from app.observability.quality import (
@@ -39,7 +39,7 @@ def process_domain(domain: str, business_row: dict) -> dict:
 
                 context = prepare_context(pages)
 
-                intelligence = extract_company_intelligence(context)
+                intelligence, usage = extract_company_intelligence_with_usage(context)
                 intelligence_data = intelligence.model_dump()
 
                 company_name = str(business_row["company"])
@@ -78,6 +78,7 @@ def process_domain(domain: str, business_row: dict) -> dict:
                     "pages_collected": len(pages),
 
                     "intelligence": intelligence_data,
+                    "usage": usage,
 
                     "business_metrics": business_row,
 
