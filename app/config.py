@@ -4,8 +4,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-LLM_MODEL = os.getenv("LLM_MODEL", "gpt-4o-mini")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+LLM_MODEL = os.getenv("LLM_MODEL", "gemini-2.5-flash")
 
 REQUEST_TIMEOUT_MS = int(os.getenv("REQUEST_TIMEOUT_MS", "30000"))
 MAX_PAGES_PER_DOMAIN = int(os.getenv("MAX_PAGES_PER_DOMAIN", "7"))

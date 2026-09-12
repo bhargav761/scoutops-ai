@@ -1,0 +1,4 @@
+company,mrr_usd,revenue_growth_pct,customer_growth_pct,cac_usd,ltv_usd,churn_pct,conversion_rate_pct,customers,marketing_spend_usd
+Postman,185000,18.4,15.2,420,8900,2.1,6.8,1240,52000
+Supabase,142000,24.7,21.5,380,10200,1.9,7.4,980,41000
+Vapi,78000,32.6,28.4,510,7600,3.2,5.9,460,36000
